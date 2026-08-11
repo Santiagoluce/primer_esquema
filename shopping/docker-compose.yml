@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: db
+    environment:
+      - POSTGRES_PASSWORD=clave
+    networks:
+      - app-net
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    image: node:12-alpine
+    container_name: api
+    environment:
+      - DB_HOST=db
+    ports:
+      - "3000:3000"
+    networks:
+      - app-net
+
+  web:
+    image: nginx:latest
+    container_name: web
+    ports:
+      - "5000:5000"
+    networks:
+      - app-net
+
+networks:
+  app-net:
+
+volumes:
+  pgdata:
