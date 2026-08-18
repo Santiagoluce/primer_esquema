@@ -1,36 +1,22 @@
-version: "3.8"
-
 services:
-  db:
-    image: postgres:15-alpine
-    container_name: db
-    environment:
-      - POSTGRES_PASSWORD=clave
-    networks:
-      - app-net
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
   api:
-    image: node:12-alpine
-    container_name: api
+    container_name: backend-mono-api
+    build: .
+    ports:
+      - "8000:8000"
     environment:
-      - DB_HOST=db
-    ports:
-      - "3000:3000"
-    networks:
-      - app-net
-
-  web:
-    image: nginx:latest
-    container_name: web
-    ports:
-      - "5000:5000"
-    networks:
-      - app-net
-
-networks:
-  app-net:
-
+      PORT: 8000
+      DB_URL: mongodb://mongo:27017/enfasis-i
+      APP_SECRET: $(APP_SECRET:-dev-secret-change-me)
+    depends_on:
+      - mongo
+  mongo:
+  container_name: backend-db
+  image: mongo:7
+  ports:
+    - "27017:27017"
+  volumes:
+    - mongo-data:/data/db
+    
 volumes:
-  pgdata:
+  mongo-data:
