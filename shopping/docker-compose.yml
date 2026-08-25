@@ -20,7 +20,7 @@ services:
     container_name: c-shopping-db
     image: mongo:7
     ports:
-      - "27018:27017"  
+      - "27017:27017"  
     volumes:
       - shopping-data:/data/db
 

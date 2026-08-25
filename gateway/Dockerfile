@@ -1,5 +1,7 @@
 FROM node:22-alpine
 
+ENV NODE_ENV=production
+
 WORKDIR /app
 
 COPY package*.json ./
@@ -8,6 +10,8 @@ RUN npm ci --omit=dev
 
 COPY . .
 
-EXPOSE 8001
+user  node
 
-CMD ["node", "start"]
+EXPOSE 8000
+
+CMD ["npm","start"]
