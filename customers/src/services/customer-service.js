@@ -13,14 +13,17 @@ class CustomerService {
         try {
             const existingCustomer = await this.repository.FindCustomer({ email });
 
-            if (existingCustomer) {
-                const validPassword = await ValidatePassword(password, existingCustomer.password, existingCustomer.salt);
-
-                if (validPassword) {
-                    const token = await GenerateSignature({ email: existingCustomer.email, _id: existingCustomer._id });
-                    return FormateData({ id: existingCustomer._id, token });
-                }
+            if (!existingCustomer || !existingCustomer.password || !existingCustomer.salt) {
+                throw new BadRequestError('Invalid credentials');
             }
+
+            const validPassword = await ValidatePassword(password, existingCustomer.password, existingCustomer.salt);
+
+            if (validPassword) {
+                const token = await GenerateSignature({ email: existingCustomer.email, _id: existingCustomer._id });
+                return FormateData({ id: existingCustomer._id, token });
+            }
+
             throw new BadRequestError('Invalid credentials');
         } catch (err) {
             if (err instanceof APIError) throw err;
@@ -49,6 +52,24 @@ class CustomerService {
         try {
             const address = await this.repository.AddNewAddress(_id, { street, postalCode, city, country });
             return FormateData(address);
+        } catch (err) {
+            throw new APIError('Data Not Found', 404, err.message);
+        }
+    }
+
+    async UpdateAddress(_id, addressId, addressData) {
+        try {
+            const profile = await this.repository.UpdateAddress(_id, addressId, addressData);
+            return FormateData(profile);
+        } catch (err) {
+            throw new APIError('Data Not Found', 404, err.message);
+        }
+    }
+
+    async DeleteAddress(_id, addressId) {
+        try {
+            const profile = await this.repository.DeleteAddress(_id, addressId);
+            return FormateData(profile);
         } catch (err) {
             throw new APIError('Data Not Found', 404, err.message);
         }

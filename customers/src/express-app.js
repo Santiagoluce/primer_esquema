@@ -1,14 +1,7 @@
 const express = require('express');
-const customer= require('./api/customer');
-const HandleErrors = require('./utils/error-handler');
+const customer = require('./api/customer');
 
 module.exports = async (app) => {
-    app.use(express.json({ limit: '1mb' }));
-    app.use(express.urlencoded({ extended: true, limit: '1mb' }));
-   
-   app.use('/customer', customer);
-
-    
-    // error handling
-    app.use(HandleErrors);
-}
+  app.use(express.json());
+  app.use('/customer', customer);
+};

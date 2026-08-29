@@ -1,16 +1,16 @@
-require('dotenv').config({ quiet: true });
+require('dotenv').config();
 
-const config = {
-    PORT: process.env.PORT || 8000,
-    DB_URL: process.env.DB_URL
+function requireVars(...vars) {
+  vars.forEach(v => {
+    if (!process.env[v]) {
+      throw new Error(`❌ Missing required env var: ${v}`);
+    }
+  });
+}
+
+module.exports = {
+  requireVars,
+  DB_URL: process.env.DB_URL,
+  PORT: process.env.PORT || 8001,
+  APP_SECRET: process.env.APP_SECRET || 'dev-secret-change-me'
 };
-
-config.requireVars = (...names) => {
-    const missing = names.filter((name) => !config[name]);
-    if(missing.length) {
-        console.error(`Missing required env variables: ${missing.join(', ')}`);
-        process.exit(1);
-    
-}};
-
-module.exports = config;

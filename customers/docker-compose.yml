@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  customers:
+    container_name: c-customers
+    build: .
+    ports:
+      - "8001:8001"
+    environment:
+      PORT: 8001
+      DB_URL: mongodb://customers-db:27017/customers
+      APP_SECRET: ${APP_SECRET:-dev-secret-change-me}
+    depends_on:
+      - customers-db
+    networks:
+      - app-net
+
+  customers-db:
+    container_name: c-customers-db
+    image: mongo:7
+    ports:
+      - "27018:27017"
+    volumes:
+      - customers-data:/data/db
+    networks:
+      - app-net
+
+volumes:
+  customers-data:
+
+networks:
+  app-net:
+    driver: bridge

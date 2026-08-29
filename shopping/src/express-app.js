@@ -1,4 +1,3 @@
-// shopping/src/express-app.js
 const express = require('express');
 const cors = require('cors');
 const shoppingRoutes = require('./api/shopping');
@@ -9,9 +8,8 @@ module.exports = async (app) => {
     app.use(express.urlencoded({ extended: true, limit: '1mb' }));
     app.use(cors());
 
-    // Montar las rutas del microservicio shopping
+    app.use(shoppingRoutes);
     app.use('/shopping', shoppingRoutes);
 
-    // Manejo de errores
     app.use(HandleErrors);
 };

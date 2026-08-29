@@ -31,6 +31,45 @@ class CustomerRepository {
         return address;
     }
 
+    async UpdateAddress(customerId, addressId, updates) {
+        const customer = await CustomerModel.findById(customerId).populate('address');
+
+        if (!customer) {
+            throw new BadRequestError('Customer not found');
+        }
+
+        const address = customer.address.find((item) => item._id.toString() === addressId);
+
+        if (!address) {
+            throw new BadRequestError('Address not found');
+        }
+
+        Object.assign(address, updates);
+        await address.save();
+
+        return customer;
+    }
+
+    async DeleteAddress(customerId, addressId) {
+        const customer = await CustomerModel.findById(customerId);
+
+        if (!customer) {
+            throw new BadRequestError('Customer not found');
+        }
+
+        const hasAddress = customer.address.some((item) => item.toString() === addressId);
+
+        if (!hasAddress) {
+            throw new BadRequestError('Address not found');
+        }
+
+        customer.address = customer.address.filter((item) => item.toString() !== addressId);
+        await customer.save();
+        await AddressModel.findByIdAndDelete(addressId);
+
+        return CustomerModel.findById(customerId).populate('address');
+    }
+
     async GetProfile(customerId) {
         return CustomerModel.findById(customerId).populate('address');
     }
