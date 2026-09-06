@@ -16,7 +16,7 @@ router.post('/signup', async (req, res, next) => {
     }
 
     const { data } = await customerService.SignUp({ email, password, phone });
-    return res.status(201).json(data);
+    return res.status(201).json({ email, ...data });
   } catch (err) {
     next(err);
   }
@@ -32,7 +32,7 @@ router.post('/login', async (req, res, next) => {
     }
 
     const { data } = await customerService.SignIn({ email, password });
-    return res.json(data);
+    return res.json({ email, ...data });
   } catch (err) {
     next(err);
   }
@@ -48,7 +48,7 @@ router.post('/signin', async (req, res, next) => {
     }
 
     const { data } = await customerService.SignIn({ email, password });
-    return res.json(data);
+    return res.json({ email, ...data });
   } catch (err) {
     next(err);
   }

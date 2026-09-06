@@ -29,6 +29,7 @@ class ShoppingService {
     this.Cart = mongoose.models.Cart || mongoose.model('Cart', cartSchema);
     this.Wishlist = mongoose.models.Wishlist || mongoose.model('Wishlist', wishlistSchema);
     this.Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
+    this.memoryCart = new Map();
   }
 
   _normalizeProduct(product, fallbackId, quantityOverride) {
@@ -76,6 +77,22 @@ class ShoppingService {
 
   async AddToCart(userId, productInput, quantityInput) {
     const { productId, product, quantity } = this._normalizeProduct(productInput, productInput, quantityInput);
+
+    if (mongoose.connection.readyState !== 1) {
+      const key = `${userId}:${productId}`;
+      const existing = this.memoryCart.get(key);
+      const item = existing || { userId, productId, product, quantity };
+
+      item.product = product;
+      item.quantity = quantity;
+      this.memoryCart.set(key, item);
+
+      return {
+        success: true,
+        message: existing ? 'Producto actualizado en el carrito' : 'Producto agregado al carrito',
+        item,
+      };
+    }
 
     const data = { userId, productId, product, quantity };
 

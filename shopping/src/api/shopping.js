@@ -216,3 +216,5 @@ router.get('/shopping-details', UserAuth, async (req, res, next) => {
 });
 
 module.exports = router;
+module.exports.normalizeCartInput = normalizeCartInput;
+module.exports.normalizeWishlistInput = normalizeWishlistInput;
